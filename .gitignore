@@ -1,6 +1,27 @@
-﻿__pycache__/
-*.pyc
+# Python
+__pycache__/
+*.py[cod]
 *.pyo
-plots/
+
+# Generated images (runtime output)
+images/weathermap.bmp
+images/radar_map.png
+images/2_warnings_weathermap.bmp
+sidebar_img_weather_warning.png
+
+# Cached map axes (regenerated at runtime)
+plots/*.pickle
+
+# Logs
 weathermap_log.txt
+
+# Editor
 .vscode/
+*.save
+
+# Duplicate nested folder (keep only top-level)
+Weathermap3.3_2026_Jan_27/
+
+# OS
+.DS_Store
+Thumbs.db

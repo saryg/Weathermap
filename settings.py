@@ -1,3 +1,4 @@
+import os
 from PIL import ImageFont
 
 # Screen and sidebar width and heights
@@ -9,7 +10,7 @@ sidebar_height = screen_height
 map_display_width = screen_width - sidebar_width
 
 # Paths
-path = "/home/sara/Weathermap3.2/"
+path = os.path.dirname(os.path.abspath(__file__)) + "/"
 font_path = path + "fonts/BebasNeue-Regular.ttf"  # "fonts/WalterTurncoat-Regular.ttf"
 icon_path = path + "icons-transparent/"
 base_map_path = path + "images/{country}_base_map.png"

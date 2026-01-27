@@ -265,10 +265,11 @@ def countryMapShape(country):
 
 
 def main():
-    country = "Germany"  # "Ireland" or "Germany"
+    country = "Ireland"  # "Ireland" or "Germany"
     createBaseMap(country)
     base_radar_map_image = makeRadarMap(country)
 
 
 if __name__ == "__main__":
     main()
+

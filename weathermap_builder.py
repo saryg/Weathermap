@@ -16,7 +16,7 @@ import weathermap
 import forecast
 import settings
 
-#sys.path.append("home/sara/IT8951")
+#sys.path.append("IT8951")
 
 from IT8951.display import AutoEPDDisplay
 from IT8951.functions import display_image
@@ -719,22 +719,23 @@ def addRadarErrorMessage(image):
     return image
 
 
+'''
+
 def addWeatherWarnings(image, weather_warning_data):
     draw = ImageDraw.Draw(image)
-
     y = 970 if len(weather_warning_data) == 1 else 950
     x = 0
     current_y = y
     icon_path = settings.icon_path + "warning.png"  # "warning_no_transparency.png"
-
     small_font_size = settings.SMALL_FONT
     smaller_font_size = settings.SMALLER_FONT
     icon_size = settings.MED_ICON_SIZE
     font_colour = "black"
-
-    for warning in range(len(weather_warning_data)):
-        if weather_warning_data[warning]["type"] != "Advisory": #"Blight":
-            text_str = f"{weather_warning_data[warning]['level']} {weather_warning_data[warning]['headline']}" #{weather_warning_data[warning]['type']} {weather_warning_data[warning]['status']}"
+    for index, warning_data in enumerate(weather_warning_data):
+        if warning_data["type"] != "Advisory" and "blight" not in warning_data["headline"].lower():
+            # "Blight":
+            text_str = f"{warning_data['level']} {warning_data['headline']}"
+            # {warning_data['type']} {warning_data['status']}"
             y_offset, icon_start_x, text_start_x = placeIconAndData(
                 draw,
                 image,
@@ -747,7 +748,115 @@ def addWeatherWarnings(image, weather_warning_data):
                 small_font_size,
                 font_colour,
             )
+            current_y += y_offset - 27
+            onset = prs.parse(warning_data["onset"])
+            onset_str = f"{onset:%H:%M} {onset:%d/%m}"
+            expiry = prs.parse(warning_data["expiry"])
+            expiry_str = f"{expiry:%H:%M} {expiry:%d/%m}"
+            text_str = f"{onset_str} - {expiry_str}"
+            centred_x, w, h = centreTextHorizontally(
+                draw=draw,
+                font=small_font_size,
+                text=text_str,
+                x_start=0,
+                x_end=settings.map_display_width,
+            )
+            draw.text(
+                (text_start_x, current_y),
+                text_str,
+                fill="black",
+                font=small_font_size,
+                stroke_width=2,
+                stroke_fill="white",
+            )
+            current_y += y_offset
+    return image
+    draw = ImageDraw.Draw(image)
+    y = 970 if len(weather_warning_data) == 1 else 950
+    current_y = y
+    icon_path = settings.icon_path + "warning.png"  # "warning_no_transparency.png"
+    small_font_size = settings.SMALL_FONT
+    smaller_font_size = settings.SMALLER_FONT
+    icon_size = settings.MED_ICON_SIZE
+    font_colour = "black"
+    for warning in range(len(weather_warning_data)):
+        if (
+            weather_warning_data[warning]["type"] != "Advisory"
+            and "blight"
+            not in weather_warning_data[warning]["headline"].lower()
+        ):  # "Blight":
+            text_str = (
+                f"{weather_warning_data[warning]['level']} "
+                f"{weather_warning_data[warning]['headline']}"
+            )  # {weather_warning_data[warning]['type']} {weather_warning_data[warning]['status']}"
+            y_offset, icon_start_x, text_start_x = placeIconAndData(
+                draw,
+                image,
+                current_y,
+                0,
+                settings.map_display_width,
+                icon_path,
+                text_str,
+                icon_size,
+                small_font_size,
+                font_colour,
+            )
+            current_y += y_offset - 27
+            onset = prs.parse(weather_warning_data[warning]["onset"])
+            onset_str = f"{onset:%H:%M} {onset:%d/%m}"
+            expiry = prs.parse(weather_warning_data[warning]["expiry"])
+            expiry_str = f"{expiry:%H:%M} {expiry:%d/%m}"
+            text_str = f"{onset_str} - {expiry_str}"
+            centred_x, w, h = centreTextHorizontally(
+                draw=draw,
+                font=small_font_size,
+                text=text_str,
+                x_start=0,
+                x_end=settings.map_display_width,
+            )
+            draw.text(
+                (text_start_x, current_y),
+                text_str,
+                fill="black",
+                font=small_font_size,
+                stroke_width=2,
+                stroke_fill="white",
+            )
+            current_y += y_offset
+    return image
+    draw = ImageDraw.Draw(image)
+    y = 970 if len(weather_warning_data) == 1 else 950
+    x = 0
+    current_y = y
+    icon_path = settings.icon_path + "warning.png"  # "warning_no_transparency.png"
+    small_font_size = settings.SMALL_FONT
+    smaller_font_size = settings.SMALLER_FONT
+    icon_size = settings.MED_ICON_SIZE
+    font_colour = "black"
 
+    for warning in range(len(weather_warning_data)):
+        if (
+            weather_warning_data[warning]["type"] != "Advisory"
+            and "blight" not in weather_warning_data[warning]["headline"].lower()
+        ):
+            #"Blight":
+            text_str = (
+                f"{weather_warning_data[warning]['level']} "
+                f"{weather_warning_data[warning]['headline']}"
+            )
+            #{weather_warning_data[warning]['type']} {weather_warning_data[warning]['status']}"
+            y_offset, icon_start_x, text_start_x = placeIconAndData(
+                draw,
+                image,
+                current_y,
+                0,
+                settings.map_display_width,
+                icon_path,
+                text_str,
+                icon_size,
+                small_font_size,
+                font_colour,
+            )
             current_y += y_offset - 27
 
             onset = prs.parse(weather_warning_data[warning]["onset"])
@@ -757,6 +866,7 @@ def addWeatherWarnings(image, weather_warning_data):
             expiry_str = f"{expiry:%H:%M} {expiry:%d/%m}"
 
             text_str = f"{onset_str} - {expiry_str}"
+
             centred_x, w, h = centreTextHorizontally(
                 draw=draw,
                 font=small_font_size,
@@ -773,10 +883,254 @@ def addWeatherWarnings(image, weather_warning_data):
                 stroke_width=2,
                 stroke_fill="white",
             )
-
             current_y += y_offset
 
     return image
+# warning_data["headline"] = "Yellow weather warniing for cork kerry dublin wickliow waterford, kildare, donegal, galway tyrone."
+#weather_warning_data = [
+    {
+        "type": "Warning",
+        "level": "Status Orange",
+        "headline": "Heavy rain and persistent thunderstorms expected to cause localised flooding and hazardous driving conditions",
+        "onset": "2026-01-27T03:00",
+        "expiry": "2026-01-27T18:00",
+    },
+    {
+        "type": "Warning",
+        "level": "Status Yellow",
+        "headline": "Strong to gale force winds combined with squally showers may lead to fallen trees, power outages and dangerous travel conditions",
+        "onset": "2026-01-27T19:00",
+        "expiry": "2026-01-28T06:00",
+    },
+    {
+        "type": "Warning",
+        "level": "Status Yellow",
+        "headline": "Strong to gale force winds combined with squally showers may lead to fallen trees, power outages and dangerous travel conditions",
+        "onset": "2026-01-27T19:00",
+        "expiry": "2026-01-28T06:00",
+    },
+
+]
+'''
+def _text_size(draw, text, font):
+    bbox = draw.textbbox((0, 0), text, font=font)
+    return (bbox[2] - bbox[0], bbox[3] - bbox[1])
+
+
+def wrap_text_px(draw, text, font, max_width_px, max_lines=3):
+    words = text.split()
+    if not words:
+        return [""]
+
+    lines = []
+    cur = ""
+
+    for idx, w in enumerate(words):
+        test = (cur + " " + w).strip()
+        tw, _ = _text_size(draw, test, font)
+        if tw <= max_width_px:
+            cur = test
+        else:
+            if cur:
+                lines.append(cur)
+            cur = w
+
+            # If we're about to exceed max_lines, truncate the last line with ellipsis
+            if len(lines) == max_lines - 1:
+                remaining = " ".join([cur] + words[idx + 1 :])
+                line = remaining
+                ell = "…"
+                while line and _text_size(draw, line + ell, font)[0] > max_width_px:
+                    line = line[:-1]
+                lines.append((line.rstrip() + ell) if line else ell)
+                return lines
+
+    if cur:
+        lines.append(cur)
+
+    return lines[:max_lines]
+
+
+def addWeatherWarnings(image, weather_warning_data):
+    draw = ImageDraw.Draw(image)
+    
+    # ---- filter + cap to 3 warnings you will actually draw ----
+    warnings_to_draw = [
+        w for w in weather_warning_data
+        if w.get("type") != "Advisory"
+        and "blight" not in w.get("headline", "").lower()
+    ][:3]
+
+    if not warnings_to_draw:
+        return image
+
+    icon_path = settings.icon_path + "warning.png"
+    font = settings.SMALL_FONT
+    icon_size = settings.MED_ICON_SIZE
+    font_colour = "black"
+
+    # Layout knobs
+    gap_icon_text = 10
+    outer_padding = 20
+    line_spacing = 6
+    after_time_gap = 12          # gap after time before next warning (keep small)
+    time_gap_px = 2              # EXACT gap under headline block
+    stroke_width = 2
+
+    start_x = 0
+    end_x = settings.map_display_width
+
+    top_bound = 875
+    bottom_bound = 1175
+
+    def text_w_h(text):
+        bbox = draw.textbbox((0, 0), text, font=font)
+        return (bbox[2] - bbox[0], bbox[3] - bbox[1])
+
+    def wrap_text_px(text, max_width_px, max_lines=3):
+        words = text.split()
+        if not words:
+            return [""]
+
+        lines = []
+        cur = ""
+
+        for idx, w in enumerate(words):
+            test = (cur + " " + w).strip()
+            if text_w_h(test)[0] <= max_width_px:
+                cur = test
+            else:
+                if cur:
+                    lines.append(cur)
+                cur = w
+
+                # truncate on last allowed line
+                if len(lines) == max_lines - 1:
+                    remaining = " ".join([cur] + words[idx + 1 :])
+                    line = remaining
+                    ell = "…"
+                    while line and text_w_h(line + ell)[0] > max_width_px:
+                        line = line[:-1]
+                    lines.append((line.rstrip() + ell) if line else ell)
+                    return lines
+
+        if cur:
+            lines.append(cur)
+        return lines[:max_lines]
+
+    # text width available to the right of icon
+    max_text_width_px = max(
+        60,
+        (end_x - start_x) - (outer_padding * 2) - icon_size[0] - gap_icon_text,
+    )
+
+    # line height
+    _, line_h = text_w_h("Ag")
+
+    # ---- pre-wrap + measure total height (tight, accurate) ----
+    cached = []
+    total_h = 0
+
+    for w in warnings_to_draw:
+        level = w.get("level", "")
+        headline = w.get("headline", "")
+        headline_full = f"{level} {headline}".strip()
+
+        lines = wrap_text_px(headline_full, max_text_width_px, max_lines=3)
+        cached.append(lines)
+
+        # headline text is drawn starting at current_y + 5
+        headline_text_top_offset = 5
+        headline_text_h = (len(lines) * line_h) + ((len(lines) - 1) * line_spacing)
+
+        # icon aligns with 2nd line if wrapped
+        icon_y_offset = (line_h + (line_spacing // 2)) if len(lines) > 1 else 0
+        block_h = max(headline_text_top_offset + headline_text_h, icon_y_offset + icon_size[1])
+
+        # timing string height (same font)
+        timing_h = line_h
+
+        total_h += block_h + time_gap_px + timing_h + after_time_gap
+
+    # ---- choose start_y: fit in bounds; if 1 warning prefer ~950 but still fit ----
+    start_fit_y = int(bottom_bound - total_h)
+    if start_fit_y < top_bound:
+        start_fit_y = top_bound
+
+    if len(warnings_to_draw) == 1:
+        # prefer ~950, but ensure it still fits inside bottom bound
+        preferred = 980
+        max_start_allowed = int(bottom_bound - total_h)
+        current_y = max(top_bound, min(preferred, max_start_allowed))
+    else:
+        current_y = start_fit_y
+
+    # ---- draw ----
+    for w, headline_lines in zip(warnings_to_draw, cached):
+        # Build timing string (your data includes timezone; dateutil handles it)
+        onset = prs.parse(w["onset"])
+        expiry = prs.parse(w["expiry"])
+        timing = f"{onset:%H:%M} {onset:%d/%m} - {expiry:%H:%M} {expiry:%d/%m}"
+
+        # Center block based on widest wrapped line
+        widths = [text_w_h(ln)[0] for ln in headline_lines]
+        text_block_w = max(widths) if widths else 0
+        block_w = icon_size[0] + gap_icon_text + text_block_w
+
+        icon_start_x = start_x + int(((end_x - start_x) - block_w) / 2)
+        text_start_x = icon_start_x + icon_size[0] + gap_icon_text
+
+        # Icon aligned with 2nd line if wrapped
+        icon_y_offset = (line_h + (line_spacing // 2)) if len(headline_lines) > 1 else 0
+        icon_y = current_y + icon_y_offset
+
+        icon_black, icon_white = setup_icon_image(icon_path, icon_size)
+        icon = icon_black if font_colour == "black" else icon_white
+        image.paste(icon, (icon_start_x, icon_y), icon)
+
+        # Headline text (draw AFTER icon so icon doesn’t cover text)
+        text_y = current_y + 7
+        for i, line in enumerate(headline_lines):
+            draw.text(
+                (text_start_x, text_y + i * (line_h + line_spacing)),
+                line,
+                fill=font_colour,
+                font=font,
+                stroke_width=stroke_width,
+                stroke_fill="white",
+            )
+
+        # Compute the actual bottom of what we drew (tight)
+        # Bottom of last headline line (tight)
+        last_line_y = text_y + (len(headline_lines) - 1) * (line_h + line_spacing)
+        headline_bottom = last_line_y + line_h
+
+        icon_bottom = icon_y + icon_size[1]
+        block_bottom = max(headline_bottom, icon_bottom)
+
+
+
+        # 1) Put time tight under the HEADLINE (not under the icon)
+        time_y = headline_bottom + 5
+        draw.text(
+            (text_start_x, time_y),
+            timing,
+            fill="black",
+            font=font,
+            stroke_width=2,
+            stroke_fill="white",
+        )
+
+        # 2) Advance for the next warning using whichever is LOWER:
+        #    - the bottom of the time line, or
+        #    - the bottom of the icon (so the next warning doesn't overlap the icon)
+        _, timing_h = text_w_h(timing)
+        next_top = max(time_y + timing_h, icon_bottom) + after_time_gap
+        current_y = next_top
+
+
+    return image
+
 
 
 def addCurrentConditions(image, forecast_data, font_colour):
