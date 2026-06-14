@@ -1,4 +1,4 @@
-# Raspberry Pi E-Paper Weathermap
+# Raspberry Pi E-Paper Weathermap (OLD)
 Old versions
 
 Displays a live radar map and weather forecast on a Waveshare 9.7" e-paper screen connected to a Raspberry Pi. 
